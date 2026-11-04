@@ -39,7 +39,6 @@ class IncidenciasScreen extends StatefulWidget {
 }
 
 class _IncidenciasScreenState extends State<IncidenciasScreen> {
-  final HardwareService _hardware = HardwareService();
   // 10.0.2.2 apunta a la maquina anfitriona desde el emulador de Android
   final SyncService _syncService = SyncService(
     backendUrl: 'http://10.0.2.2:8080',
@@ -193,7 +192,8 @@ class _NuevaIncidenciaModalState extends State<NuevaIncidenciaModal> {
         );
       }
     } finally {
-      setState(() => _obteniendoGps = false);
+      // Evita llamar setState si el formulario ya se cerro
+      if (mounted) setState(() => _obteniendoGps = false);
     }
   }
 
@@ -268,7 +268,7 @@ class _NuevaIncidenciaModalState extends State<NuevaIncidenciaModal> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _categoria,
+              initialValue: _categoria,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               items: const [
                 DropdownMenuItem(value: 'INFRAESTRUCTURA', child: Text('Infraestructura')),
