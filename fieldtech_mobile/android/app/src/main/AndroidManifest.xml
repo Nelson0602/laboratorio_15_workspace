@@ -1,8 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permisos de Ubicacion Satelital (GPS) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Permiso de Camara Fotografica -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Permiso de Internet para la sincronizacion con el backend -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
-        android:label="fieldtech_mobile"
+        android:label="FieldTech Móvil"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
