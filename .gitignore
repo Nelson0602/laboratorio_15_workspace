@@ -8,3 +8,6 @@ fieldtech-backend/.mvn/wrapper/maven-wrapper.jar
 *.iml
 .DS_Store
 Thumbs.db
+
+# Cache de Kotlin generada por Gradle
+fieldtech_mobile/android/.kotlin/
