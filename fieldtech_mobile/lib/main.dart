@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'data/database_helper.dart';
+import 'models/sync_filter.dart';
 import 'services/hardware_service.dart';
 import 'services/sync_service.dart';
 
@@ -47,6 +48,9 @@ class _IncidenciasScreenState extends State<IncidenciasScreen> {
   List<Map<String, dynamic>> _incidencias = [];
   bool _cargando = false;
 
+  // Filtro activo del SegmentedButton (Todas, Offline o Sincronizadas)
+  SyncFilter _selectedFilter = SyncFilter.all;
+
   @override
   void initState() {
     super.initState();
@@ -54,8 +58,15 @@ class _IncidenciasScreenState extends State<IncidenciasScreen> {
   }
 
   Future<void> _cargarIncidenciasLocales() async {
-    final datos = await DatabaseHelper.instance.obtenerTodas();
-    setState(() => _incidencias = datos);
+    // Consulta SQLite con el WHERE que corresponde al filtro activo
+    final datos = await DatabaseHelper.instance.getByFilter(_selectedFilter);
+    if (mounted) setState(() => _incidencias = datos);
+  }
+
+  // Cambia el filtro y refresca la lista desde SQLite
+  void _changeFilter(Set<SyncFilter> selection) {
+    setState(() => _selectedFilter = selection.first);
+    _cargarIncidenciasLocales();
   }
 
   Future<void> _sincronizar() async {
@@ -109,13 +120,34 @@ class _IncidenciasScreenState extends State<IncidenciasScreen> {
             onPressed: _cargando ? null : _sincronizar,
           ),
         ],
+        // Filtro segmentado bajo el titulo del AppBar
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: SegmentedButton<SyncFilter>(
+              segments: [
+                for (final filter in SyncFilter.values)
+                  ButtonSegment<SyncFilter>(
+                    value: filter,
+                    label: Text(filter.label),
+                    icon: Icon(filter.icon),
+                  ),
+              ],
+              selected: <SyncFilter>{_selectedFilter},
+              onSelectionChanged: _changeFilter,
+            ),
+          ),
+        ),
       ),
       body: _incidencias.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
-                'No hay inspecciones registradas.\nPresione + para crear una.',
+                _selectedFilter == SyncFilter.all
+                    ? 'No hay inspecciones registradas.\nPresione + para crear una.'
+                    : 'No hay inspecciones con el filtro "${_selectedFilter.label}".',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             )
           : ListView.builder(

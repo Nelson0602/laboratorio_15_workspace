@@ -1,6 +1,7 @@
 // lib/data/database_helper.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import '../models/sync_filter.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -57,6 +58,24 @@ class DatabaseHelper {
       'incidencias_locales',
       where: 'is_synced = ?',
       whereArgs: [0],
+    );
+  }
+
+  // Consulta las incidencias segun el filtro elegido en el SegmentedButton
+  Future<List<Map<String, dynamic>>> getByFilter(SyncFilter filter) async {
+    final db = await instance.database;
+
+    // "Todas" no necesita WHERE
+    if (filter == SyncFilter.all) {
+      return await db.query('incidencias_locales', orderBy: 'id DESC');
+    }
+
+    final int syncedValue = filter == SyncFilter.synced ? 1 : 0;
+    return await db.query(
+      'incidencias_locales',
+      where: 'is_synced = ?',
+      whereArgs: [syncedValue],
+      orderBy: 'id DESC',
     );
   }
 
