@@ -20,6 +20,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  sqflite_common_ffi: ^2.4.5
 
 # Necesario para que se muestren los iconos de Material (Icons.sync, Icons.camera_alt, etc.)
 flutter:
