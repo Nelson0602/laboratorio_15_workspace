@@ -1,0 +1,10 @@
+# Backend Spring Boot (Maven)
+fieldtech-backend/target/
+fieldtech-backend/.mvn/wrapper/maven-wrapper.jar
+
+# Editores
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
